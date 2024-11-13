@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Libros - Biblioteca</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">Biblioteca</a>
+            <div class="navbar-nav">
+                <a class="nav-link active" href="books.html">Todos los libros</a>
+                <a class="nav-link" href="mybooks.html">Mis libros</a>
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addBookModal">Agregar Libro</button>
+                <a class="nav-link" href="#" id="logout">Cerrar sesión</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row" id="booksContainer"></div>
+    </div>
+
+    <!-- Modal para agregar un libro -->
+    <div class="modal fade" id="addBookModal" tabindex="-1" aria-labelledby="addBookModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addBookModalLabel">Agregar Libro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addBookForm">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="author" class="form-label">Autor</label>
+                            <input type="text" class="form-control" id="author" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="description" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="image" class="form-label">URL de imagen</label>
+                            <input type="text" class="form-control" id="image">
+                        </div>
+                        <button type="submit" class="btn btn-success">Agregar Libro</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Obtener usuario actual desde el localStorage
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        // Si no hay usuario logueado, redirigir a la página de inicio
+        if (!currentUser) {
+            window.location.href = "index.html";
+        }
+
+        // Función para cargar los libros desde el servidor
+        function loadBooks() {
+            // Hacer una solicitud GET a la API para obtener todos los libros
+            fetch("http://localhost:3000/books")
+                .then(response => response.json()) // Convertir la respuesta en formato JSON
+                .then(data => {
+                    // Obtener el contenedor donde se mostrarán los libros
+                    const container = document.getElementById("booksContainer");
+                    // Limpiar el contenido del contenedor antes de agregar los nuevos libros
+                    container.innerHTML = "";
+
+                    // Iterar sobre cada libro recibido desde la respuesta
+                    data.forEach(book => {
+                        // Agregar un card de Bootstrap para cada libro
+                        container.innerHTML += `
+                            <div class="col-md-4">
+                                <div class="card book-card">
+                                    <img src="${book.image || 'https://via.placeholder.com/150'}" class="card-img-top book-image">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${book.title}</h5>
+                                        <p class="card-text">${book.author}</p>
+                                        <p class="card-text">Rating: ${book.avgRating ? book.avgRating.toFixed(1) : '0'} ⭐</p>
+                                        <button class="btn btn-primary" onclick="showBookDetails(${book.id})">Ver detalles</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                })
+                .catch(error => console.error("Error:", error)); // Manejar cualquier error de la solicitud
+        }
+
+        // Función para mostrar los detalles de un libro específico
+        function showBookDetails(bookId) {
+            // Aquí se puede agregar la lógica para mostrar los detalles del libro
+        }
+
+        // Manejar el clic del botón de cierre de sesión
+        document.getElementById("logout").addEventListener("click", function() {
+            // Eliminar el usuario del localStorage
+            localStorage.removeItem("currentUser");
+            // Redirigir a la página de inicio
+            window.location.href = "index.html";
+        });
+
+        // Manejo del formulario de agregar libro
+        document.getElementById("addBookForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevenir el comportamiento por defecto del formulario (evitar recarga de página)
+
+            // Obtener los valores del formulario
+            const title = document.getElementById("title").value;
+            const author = document.getElementById("author").value;
+            const description = document.getElementById("description").value;
+            const image = document.getElementById("image").value || "https://via.placeholder.com/150";  // Imagen por defecto si no se ingresa
+
+            // Validar si el usuario está logueado
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+            // Si no hay información de usuario, mostrar alerta y detener el proceso
+            if (!currentUser || !currentUser.id) {
+                alert("No se encontró información de usuario.");
+                return;
+            }
+
+            // Hacer la solicitud POST para agregar el libro
+            fetch("http://localhost:3000/addBook", {
+                method: "POST",  // Método POST para enviar datos al servidor
+                headers: {
+                    "Content-Type": "application/json",  // Especificar el tipo de contenido como JSON
+                },
+                body: JSON.stringify({
+                    title,
+                    author,
+                    description,
+                    image,
+                    userId: currentUser.id, // Enviar el ID del usuario que está agregando el libro
+                }),
+            })
+            .then((response) => response.json())  // Convertir la respuesta a JSON
+            .then((data) => {
+                console.log(data); // Verificar la respuesta del servidor en la consola
+                if (data.message === "Libro agregado exitosamente") {
+                    // Si el libro se agregó correctamente, ocultar el modal (ventana emergente)
+                    const modal = new bootstrap.Modal(document.getElementById('addBookModal'));
+                    modal.hide();
+
+                    // Recargar la lista de libros después de agregar uno nuevo
+                    loadBooks();
+                }
+            })
+            .catch((error) => {
+                console.error("Error al agregar el libro:", error); // Manejar cualquier error durante la solicitud
+            });
+        });
+
+        // Llamar a la función para cargar los libros al cargar la página
+        loadBooks();
+
+    </script>
+
+    <!-- Scripts de Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

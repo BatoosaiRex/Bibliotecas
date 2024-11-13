@@ -1,0 +1,27 @@
+.book-card {
+    margin-bottom: 20px;
+    transition: transform 0.3s;
+}
+
+.book-card:hover {
+    transform: translateY(-5px);
+}
+
+.rating {
+    color: #ffd700;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.rating .fas.fa-star.active {
+    color: #ffd700;
+}
+
+.rating .fas.fa-star {
+    color: #ccc;
+}
+
+.book-image {
+    height: 200px;
+    object-fit: cover;
+}
