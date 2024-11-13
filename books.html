@@ -13,8 +13,6 @@
         <div class="container">
             <a class="navbar-brand" href="#">Biblioteca</a>
             <div class="navbar-nav">
-                <a class="nav-link active" href="books.html">Todos los libros</a>
-                <a class="nav-link" href="mybooks.html">Mis libros</a>
                 <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addBookModal">Agregar Libro</button>
                 <a class="nav-link" href="#" id="logout">Cerrar sesión</a>
             </div>
@@ -24,7 +22,28 @@
     <div class="container mt-4">
         <div class="row" id="booksContainer"></div>
     </div>
-
+    <!-- Modal para detalles del libro -->
+    <div class="modal fade" id="bookModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="bookModal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="book-author"></p>
+                    <p class="book-description"></p>
+                    <div class="rating">
+                        <i class="fas fa-star"  data-rating="1"></i>
+                        <i class="fas fa-star" data-rating="2"></i>
+                        <i class="fas fa-star" data-rating="3"></i>
+                        <i class="fas fa-star" data-rating="4"></i>
+                        <i class="fas fa-star" data-rating="5"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Modal para agregar un libro -->
     <div class="modal fade" id="addBookModal" tabindex="-1" aria-labelledby="addBookModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -50,6 +69,13 @@
                         <div class="mb-3">
                             <label for="image" class="form-label">URL de imagen</label>
                             <input type="text" class="form-control" id="image">
+                        </div>
+                        <div>
+                            <i class="fas fa-star" data-rating="1"></i>
+                            <i class="fas fa-star" data-rating="2"></i>
+                            <i class="fas fa-star" data-rating="3"></i>
+                            <i class="fas fa-star" data-rating="4"></i>
+                            <i class="fas fa-star" data-rating="5"></i>
                         </div>
                         <button type="submit" class="btn btn-success">Agregar Libro</button>
                     </form>
@@ -96,11 +122,6 @@
                     });
                 })
                 .catch(error => console.error("Error:", error)); // Manejar cualquier error de la solicitud
-        }
-
-        // Función para mostrar los detalles de un libro específico
-        function showBookDetails(bookId) {
-            // Aquí se puede agregar la lógica para mostrar los detalles del libro
         }
 
         // Manejar el clic del botón de cierre de sesión
@@ -159,7 +180,34 @@
                 console.error("Error al agregar el libro:", error); // Manejar cualquier error durante la solicitud
             });
         });
+        
+        function showBookDetails(bookId) {
+        fetch(`http://localhost:3000/books/${bookId}`)
+        .then(response => response.json())
+        .then(data => {
+            const book = data.book;
+            const ratings = data.ratings;
+            const modal = new bootstrap.Modal(document.getElementById("bookModal"));
 
+            document.querySelector("#bookModal .modal-title").textContent = book.title;
+            document.querySelector("#bookModal .book-author").textContent = book.author;
+            document.querySelector("#bookModal .book-description").textContent = book.description;
+
+            const currentUser = { id: 1 }; // Supongamos que tenemos el ID del usuario actual
+            const userRating = ratings.find(r => r.book_id === bookId && r.user_id === currentUser.id);
+
+            const stars = document.querySelectorAll("#bookModal .rating .fa-star");
+            stars.forEach(star => {
+                const rating = parseInt(star.dataset.rating);
+                star.classList.toggle("active", rating <= (userRating?.rating || 0));
+
+                star.onclick = () => rateBook(bookId, rating);
+            });
+
+            modal.show();
+        })
+        .catch(error => console.error('Error:', error));
+}
         // Llamar a la función para cargar los libros al cargar la página
         loadBooks();
 

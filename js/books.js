@@ -94,7 +94,6 @@ document
         const image =
             document.getElementById("image").value ||
             "https://via.placeholder.com/150"; // URL de imagen por defecto si no se ingresa una
-
         // Realizar una solicitud POST para agregar el nuevo libro al servidor
         fetch("http://localhost:3000/addBook", {
             method: "POST", // Definir el método HTTP como POST

@@ -15,6 +15,7 @@ const db = mysql.createConnection({
     port: 3306, // Puerto de MySQL (por defecto 3306)
     user: "root", // Usuario de la base de datos
     database: "biblioteca", // Nombre de la base de datos
+    password: "nomelase",
 });
 
 // Conexión a la base de datos MySQL
@@ -110,6 +111,7 @@ app.post("/addBook", (req, res) => {
                 return res
                     .status(500)
                     .json({ message: "Error de base de datos", error: err });
+                console.log(err);
             }
             res.status(201).json({ message: "Libro agregado exitosamente" }); // Retornar mensaje de éxito
         }
@@ -132,11 +134,9 @@ app.post("/rateBook", (req, res) => {
             db.query(updateQuery, [rating, bookId, userId], (err, result) => {
                 if (err) {
                     // Si ocurre un error al actualizar la calificación
-                    return res
-                        .status(500)
-                        .json({
-                            message: "Error al actualizar la calificación",
-                        });
+                    return res.status(500).json({
+                        message: "Error al actualizar la calificación",
+                    });
                 }
                 res.status(200).json({ message: "Calificación actualizada" }); // Retornar mensaje de éxito
             });
@@ -161,4 +161,51 @@ app.post("/rateBook", (req, res) => {
 const PORT = process.env.PORT || 3000; // Usar el puerto del entorno o 3000 por defecto
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en puerto ${PORT}`); // Confirmar que el servidor está corriendo
+});
+
+app.post("/checkTitle", (req, res) => {
+    const { title } = req.body;
+    db.query(
+        "SELECT * FROM libros WHERE title = ?",
+        [title],
+        (error, results) => {
+            if (error) throw error;
+            if (results.length > 0) {
+                res.status(409).send("El título ya existe");
+            } else {
+                res.status(200).send("El título está disponible");
+            }
+        }
+    );
+});
+
+app.get("/books/:id", (req, res) => {
+    const bookId = req.params.id;
+    console.log(bookId);
+
+    db.query(
+        "SELECT * FROM books WHERE id = ?",
+        [bookId],
+        (error, bookResults) => {
+            if (error) throw error;
+
+            if (bookResults.length > 0) {
+                // Consultar las valoraciones del libro
+                db.query(
+                    "SELECT * FROM ratings WHERE book_id = ?",
+                    [bookId],
+                    (error, ratingResults) => {
+                        if (error) throw error;
+
+                        res.json({
+                            book: bookResults[0],
+                            ratings: ratingResults,
+                        });
+                    }
+                );
+            } else {
+                res.status(404).send("Libro no encontrado");
+            }
+        }
+    );
 });
