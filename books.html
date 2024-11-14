@@ -10,6 +10,7 @@
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <img src="images\tienda.png" alt="tienda" width="100px" height="120px class="col-sm-9 p-2">
         <div class="container">
             <a class="navbar-brand" href="#">Biblioteca</a>
             <div class="navbar-nav">
@@ -22,7 +23,7 @@
     <div class="container mt-4">
         <div class="row" id="booksContainer"></div>
     </div>
-    <!-- Modal para detalles del libro -->
+    
     <div class="modal fade" id="bookModal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -53,7 +54,7 @@
             </div>
         </div>
     </div>
-    <!-- Modal para agregar un libro -->
+    
     <div class="modal fade" id="addBookModal" tabindex="-1" aria-labelledby="addBookModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -87,27 +88,27 @@
     </div>
 
     <script>
-        // Obtener usuario actual desde el localStorage
+        
         const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-        // Si no hay usuario logueado, redirigir a la página de inicio
+        
         if (!currentUser) {
             window.location.href = "index.html";
         }
 
-        // Función para cargar los libros desde el servidor
+        
         function loadBooks() {
-            // Hacer una solicitud GET a la API para obtener todos los libros
+            
             fetch("http://localhost:3000/books")
-                .then(response => response.json()) // Convertir la respuesta en formato JSON
+                .then(response => response.json()) // 
                 .then(data => {
-                    // Obtener el contenedor donde se mostrarán los libros
+                    
                     const container = document.getElementById("booksContainer");
-                    // Limpiar el contenido del contenedor antes de agregar los nuevos libros
+                    
                     container.innerHTML = "";
 
-                    // Iterar sobre cada libro recibido desde la respuesta
+                    
                     data.forEach(book => {
-                        // Agregar un card de Bootstrap para cada libro
+                    
                         container.innerHTML += `
                             <div class="col-md-4">
                                 <div class="card book-card">
@@ -124,18 +125,18 @@
                         `;
                     });
                 })
-                .catch(error => console.error("Error:", error)); // Manejar cualquier error de la solicitud
+                .catch(error => console.error("Error:", error)); 
         }
 
-        // Manejar el clic del botón de cierre de sesión
+        
         document.getElementById("logout").addEventListener("click", function() {
-            // Eliminar el usuario del localStorage
+            
             localStorage.removeItem("currentUser");
-            // Redirigir a la página de inicio
+            
             window.location.href = "index.html";
         });
 
-        // Manejo del formulario de agregar libro
+        
         document.getElementById("addBookForm").addEventListener("submit", function(event) {
             event.preventDefault();
 
@@ -144,35 +145,35 @@
             const description = document.getElementById("description").value;
             const image = document.getElementById("image").value || "https://via.placeholder.com/150"; 
 
-            // Validar si el usuario está logueado
+            
             const currentUser = JSON.parse(localStorage.getItem("currentUser"));
             if (!currentUser || !currentUser.id) {
                 alert("No se encontró información de usuario.");
                 return;
             }
             
-            // Hacer la solicitud POST para agregar el libro
+            
             fetch("http://localhost:3000/addBook", {
-                method: "POST",  // Método POST para enviar datos al servidor
+                method: "POST",  // 
                 headers: {
-                    "Content-Type": "application/json",  // Especificar el tipo de contenido como JSON
+                    "Content-Type": "application/json",  
                 },
                 body: JSON.stringify({
                     title,
                     author,
                     description,
                     image,
-                    userId: currentUser.id, // Enviar el ID del usuario que está agregando el libro
+                    userId: currentUser.id, 
                 }),
             })
-            .then((response) => response.json())  // Convertir la respuesta a JSON
+            .then((response) => response.json())  
             .then((data) => {
                 if (data.message === "Libro agregado exitosamente") {
-                    // Si el libro se agregó correctamente, ocultar el modal (ventana emergente)
+                    
                     const modal = new bootstrap.Modal(document.getElementById('addBookModal'));
                     modal.hide()
 
-                    // Recargar la lista de libros después de agregar uno nuevo
+                    
                     loadBooks();
                 }
             })
@@ -197,9 +198,9 @@
         })
         .catch(error => console.error('Error:', error));
 }
-        // Llamar a la función para cargar los libros al cargar la página
+        
         loadBooks();
-        // Función para calificar un libro desde el modal
+        
         function rateBookOnModal() {
                 const bookId = document.getElementById('bookModal').dataset.bookId;
                 const rating = parseInt(document.getElementById('ratingSelect').value);
@@ -219,9 +220,9 @@
                     .then((data) => {
                         if (data.message === "Calificación registrada") {
                             alert("Gracias por calificar el libro.");
-                            loadBooks();  // Recargar la lista de libros para reflejar la calificación
+                            loadBooks();  
                             const bookDetailsModal = new bootstrap.Modal(document.getElementById('bookDetailsModal'));
-                            modal.hide();  // Cerrar el modal después de calificar
+                            modal.hide();  
                         }
                     })
                     .catch((error) => console.error("Error al calificar el libro:", error));
@@ -229,7 +230,7 @@
             }
     </script>
 
-    <!-- Scripts de Bootstrap -->
+    
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 </body>

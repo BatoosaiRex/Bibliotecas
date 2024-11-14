@@ -3,23 +3,23 @@ if (!currentUser) {
     window.location.href = "index.html";
 }
 
-// Función para cargar todos los libros desde el servidor
-function loadBooks() {
-    // Realizar una solicitud GET a la API para obtener los libros
-    fetch("http://localhost:3000/books")
-        .then((response) => response.json()) // Convertir la respuesta a JSON
-        .then((books) => {
-            // Iterar sobre la lista de libros obtenidos
-            const container = document.getElementById("booksContainer");
-            container.innerHTML = ""; // Limpiar el contenedor de libros antes de agregar nuevos
 
-            // Para cada libro, obtener su calificación promedio
+function loadBooks() {
+    
+    fetch("http://localhost:3000/books")
+        .then((response) => response.json()) 
+        .then((books) => {
+            
+            const container = document.getElementById("booksContainer");
+            container.innerHTML = ""; 
+
+            
             books.forEach((book) => {
-                // Hacer una solicitud GET para obtener las calificaciones del libro
+                
                 fetch(`http://localhost:3000/rating`)
-                    .then((response) => response.json()) // Convertir la respuesta a JSON
+                    .then((response) => response.json()) 
                     .then((ratings) => {
-                        // Calcular la calificación promedio
+                        
                         const avgRating = ratings.length
                             ? ratings.reduce(
                                   (acc, curr) => acc + curr.rating,
@@ -27,7 +27,7 @@ function loadBooks() {
                               ) / ratings.length
                             : 0;
 
-                        // Agregar cada libro al contenedor con sus detalles y calificación
+                        
                         container.innerHTML += `
                             <div class="col-md-4">
                                 <div class="card book-card">
@@ -51,67 +51,67 @@ function loadBooks() {
                     });
             });
         })
-        .catch((error) => console.error("Error al cargar los libros:", error)); // Manejo de errores en la solicitud
+        .catch((error) => console.error("Error al cargar los libros:", error)); 
 }
 
-// Función para calificar un libro
+
 function rateBook(bookId, rating) {
-    // Realizar una solicitud POST para calificar el libro
+    
     fetch("http://localhost:3000/rateBook", {
-        method: "POST", // Definir el método HTTP como POST
+        method: "POST", 
         headers: {
-            "Content-Type": "application/json", // El contenido será un objeto JSON
+            "Content-Type": "application/json", 
         },
         body: JSON.stringify({
-            bookId, // ID del libro
-            userId: currentUser.id, // ID del usuario actual
-            rating, // La calificación dada al libro
+            bookId, 
+            userId: currentUser.id, 
+            rating, 
         }),
     })
-        .then((response) => response.json()) // Convertir la respuesta en un objeto JSON
+        .then((response) => response.json()) 
         .then((data) => {
-            loadBooks(); // Recargar la lista de libros para reflejar la calificación
+            loadBooks(); 
         })
 
-        .catch((error) => console.error("Error al calificar el libro:", error)); // Manejo de errores en la solicitud
+        .catch((error) => console.error("Error al calificar el libro:", error)); 
 }
 
-// Manejar el formulario para agregar un libro
+
 document
     .getElementById("addBookForm")
     .addEventListener("submit", function (event) {
-        event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
+        event.preventDefault(); 
 
-        // Obtener los valores ingresados por el usuario para el nuevo libro
+        
         const title = document.getElementById("title").value;
         const author = document.getElementById("author").value;
         const description = document.getElementById("description").value;
         const image =
             document.getElementById("image").value ||
-            "https://via.placeholder.com/150"; // URL de imagen por defecto si no se ingresa una
-        // Realizar una solicitud POST para agregar el nuevo libro al servidor
+            "https://via.placeholder.com/150"; 
+        
         fetch("http://localhost:3000/addBook", {
-            method: "POST", // Definir el método HTTP como POST
+            method: "POST", 
             headers: {
-                "Content-Type": "application/json", // El contenido será un objeto JSON
+                "Content-Type": "application/json", 
             },
             body: JSON.stringify({
-                title, // Título del libro
-                author, // Autor del libro
-                description, // Descripción del libro
-                image, // URL de la imagen del libro
-                userId: currentUser.id, // ID del usuario que agrega el libro
+                title, 
+                author, 
+                description, 
+                image, 
+                userId: currentUser.id, 
             }),
         })
-            .then((response) => response.json()) // Convertir la respuesta a JSON
+            .then((response) => response.json()) 
             .then((data) => {
-                // Si el libro se agregó exitosamente, se cierra el modal y se recargan los libros
+                
                 if (data.message === "Libro agregado exitosamente") {
-                    console.log(first); // Cerrar el modal de agregar libro
-                    loadBooks(); // Recargar la lista de libros
+                    console.log(first); 
+                    loadBooks(); 
                 }
             })
             .catch((error) =>
                 console.error("Error al agregar el libro:", error)
-            ); // Manejo de errores en la solicitud
+            ); 
     });
