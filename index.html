@@ -36,35 +36,35 @@
     </div>
 
     <script>
-        // Se agrega un "event listener" al formulario de login, escuchando el evento de submit
+        
         document.getElementById("loginForm").addEventListener("submit", function(e) {
-            // Se previene el comportamiento por defecto del formulario, que es recargar la página
+            
             e.preventDefault();
             
-            // Se obtienen los valores introducidos por el usuario en los campos de nombre de usuario y contraseña
+            
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
 
-            // Se realiza una solicitud POST al backend para intentar hacer login
+            
             fetch("http://localhost:3000/login", {
-                method: "POST",  // Se indica que el método HTTP es POST (enviar datos)
+                method: "POST",  
                 headers: {
-                    "Content-Type": "application/json",  // Se define que el cuerpo de la solicitud es un JSON
+                    "Content-Type": "application/json",  
                 },
-                // El cuerpo de la solicitud contiene los datos del usuario (nombre de usuario y contraseña) convertidos a formato JSON
+                
                 body: JSON.stringify({ username, password })
             })
-            .then(response => response.json())  // Se convierte la respuesta de la API en un objeto JSON
+            .then(response => response.json())  
             .then(data => {
-                // Si la respuesta contiene el mensaje "Login exitoso", se guarda la información del usuario en el localStorage
+                
                 if (data.message === "Login exitoso") {
-                    localStorage.setItem("currentUser", JSON.stringify(data.user));  // Se guarda la información del usuario como un objeto JSON en localStorage
-                    window.location.href = "books.html";  // Se redirige al usuario a la página de libros (books.html)
+                    localStorage.setItem("currentUser", JSON.stringify(data.user));  
+                    window.location.href = "books.html";  
                 } else {
-                    alert(data.message);  // Si no fue exitoso el login, se muestra el mensaje de error
+                    alert(data.message);  
                 }
             })
-            .catch(error => console.error("Error:", error));  // En caso de error (por ejemplo, fallo en la red), se muestra el error en la consola
+            .catch(error => console.error("Error:", error));  
         });
 
     </script>
