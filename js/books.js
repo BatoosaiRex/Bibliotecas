@@ -18,9 +18,7 @@ function loadBooks() {
             // Para cada libro, obtener su calificación promedio
             books.forEach((book) => {
                 // Hacer una solicitud GET para obtener las calificaciones del libro
-                fetch(
-                    `http://localhost:3000/rating?bookId=${book.id}&userId=${currentUser.id}`
-                )
+                fetch(`http://localhost:3000/rating`)
                     .then((response) => response.json()) // Convertir la respuesta a JSON
                     .then((ratings) => {
                         // Calcular la calificación promedio
@@ -78,6 +76,7 @@ function rateBook(bookId, rating) {
         .then((data) => {
             loadBooks(); // Recargar la lista de libros para reflejar la calificación
         })
+
         .catch((error) => console.error("Error al calificar el libro:", error)); // Manejo de errores en la solicitud
 }
 

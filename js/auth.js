@@ -1,23 +1,16 @@
-// Importar la librería 'mysql2' para interactuar con la base de datos MySQL.
 const mysql = require("mysql2");
-// Importar la librería 'express' para crear el servidor web.
 const express = require("express");
-// Crear una instancia de la aplicación Express.
 const app = express();
-// Importar 'body-parser' para analizar el cuerpo de las solicitudes HTTP.
 const bodyParser = require("body-parser");
 
-// Configurar el servidor para procesar datos JSON en el cuerpo de las solicitudes.
 app.use(bodyParser.json());
-// Configurar el servidor para procesar datos de formularios URL-encoded (como los formularios HTML).
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Configuración de la conexión a la base de datos MySQL.
 const connection = mysql.createConnection({
-    host: "localhost", // Dirección del servidor MySQL (en este caso, local).
-    user: "root", // Usuario para conectarse a la base de datos.
-    password: "root", // Contraseña para conectarse a la base de datos.
-    database: "biblioteca", // Nombre de la base de datos a utilizar.
+    host: "localhost",
+    user: "root",
+    password: "root",
+    database: "biblioteca",
 });
 
 // Conectar a la base de datos MySQL.

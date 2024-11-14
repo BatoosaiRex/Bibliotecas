@@ -163,25 +163,8 @@ app.listen(PORT, () => {
     console.log(`Servidor corriendo en puerto ${PORT}`); // Confirmar que el servidor está corriendo
 });
 
-app.post("/checkTitle", (req, res) => {
-    const { title } = req.body;
-    db.query(
-        "SELECT * FROM libros WHERE title = ?",
-        [title],
-        (error, results) => {
-            if (error) throw error;
-            if (results.length > 0) {
-                res.status(409).send("El título ya existe");
-            } else {
-                res.status(200).send("El título está disponible");
-            }
-        }
-    );
-});
-
 app.get("/books/:id", (req, res) => {
     const bookId = req.params.id;
-    console.log(bookId);
 
     db.query(
         "SELECT * FROM books WHERE id = ?",
