@@ -1,4 +1,3 @@
-// Importación de dependencias
 const express = require("express"); // Framework de servidor web
 const mysql = require("mysql2"); // Cliente MySQL para Node.js
 const cors = require("cors"); // Middleware para permitir peticiones desde otros dominios

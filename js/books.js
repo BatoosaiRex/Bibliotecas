@@ -1,6 +1,4 @@
-// Obtener el usuario actual desde el localStorage
 const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-// Si no existe un usuario en el localStorage, redirigir a la página de login (index.html)
 if (!currentUser) {
     window.location.href = "index.html";
 }
@@ -42,9 +40,7 @@ function loadBooks() {
                                             book.title
                                         }</h5>
                                         <p class="card-text">${book.author}</p>
-                                        <p class="card-text">Rating: ${avgRating.toFixed(
-                                            1
-                                        )} ⭐</p>
+                                        <p class="card-text">Rating: ${avgRating}</p>
                                         <button class="btn btn-primary" onclick="showBookDetails(${
                                             book.id
                                         })">Ver detalles</button>
@@ -111,7 +107,7 @@ document
             .then((data) => {
                 // Si el libro se agregó exitosamente, se cierra el modal y se recargan los libros
                 if (data.message === "Libro agregado exitosamente") {
-                    $("#addBookModal").modal("hide"); // Cerrar el modal de agregar libro
+                    console.log(first); // Cerrar el modal de agregar libro
                     loadBooks(); // Recargar la lista de libros
                 }
             })

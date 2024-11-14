@@ -13,34 +13,27 @@ const connection = mysql.createConnection({
     database: "biblioteca",
 });
 
-// Conectar a la base de datos MySQL.
 connection.connect((err) => {
     if (err) {
-        // Si ocurre un error de conexión, se muestra un mensaje de error y se detiene la ejecución.
         console.error("Error de conexión a la base de datos: " + err.stack);
         return;
     }
-    // Si la conexión es exitosa, se muestra un mensaje de éxito en la consola.
+
     console.log("Conexión a la base de datos exitosa.");
 });
 
-// Verificar si existe el formulario de registro en el HTML.
 if (document.getElementById("registerForm")) {
-    // Si existe, agregar un evento al formulario que se activará cuando se envíe.
     document
         .getElementById("registerForm")
         .addEventListener("submit", function (e) {
-            e.preventDefault(); // Evitar que el formulario recargue la página al enviarse.
+            e.preventDefault();
 
-            // Obtener los valores ingresados por el usuario en los campos de nombre de usuario y contraseña.
             const username = document.getElementById("newUsername").value;
             const password = document.getElementById("newPassword").value;
 
-            // Verificar si el nombre de usuario ya existe en la base de datos.
             const query = "SELECT * FROM users WHERE username = ?";
             connection.execute(query, [username], (err, results) => {
                 if (err) {
-                    // Si ocurre un error al verificar el usuario, se muestra un mensaje de error.
                     console.error("Error al verificar el usuario: ", err);
                     alert("Hubo un error al verificar el usuario.");
                     return;

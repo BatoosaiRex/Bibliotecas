@@ -116,7 +116,7 @@
                                         <h5 class="card-title">${book.title}</h5>
                                         <p class="card-text">${book.author}</p>
                                         <p class="card-text">${book.description}</p>
-                                        <p class="card-text">Rating: ${book.avgRating ? book.avgRating.toFixed(1) : '0'} ⭐</p>
+                                        <p class="card-text">Rating: ${book.avgRating}</p>
                                         <button class="btn btn-primary" onclick="showBookDetails(${book.id})">Ver detalles</button>
                                     </div>
                                 </div>
@@ -137,22 +137,20 @@
 
         // Manejo del formulario de agregar libro
         document.getElementById("addBookForm").addEventListener("submit", function(event) {
-            event.preventDefault(); // Prevenir el comportamiento por defecto del formulario (evitar recarga de página)
+            event.preventDefault();
 
-            // Obtener los valores del formulario
             const title = document.getElementById("title").value;
             const author = document.getElementById("author").value;
             const description = document.getElementById("description").value;
-            const image = document.getElementById("image").value || "https://via.placeholder.com/150";  // Imagen por defecto si no se ingresa
+            const image = document.getElementById("image").value || "https://via.placeholder.com/150"; 
 
             // Validar si el usuario está logueado
             const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-            // Si no hay información de usuario, mostrar alerta y detener el proceso
             if (!currentUser || !currentUser.id) {
                 alert("No se encontró información de usuario.");
                 return;
             }
-
+            
             // Hacer la solicitud POST para agregar el libro
             fetch("http://localhost:3000/addBook", {
                 method: "POST",  // Método POST para enviar datos al servidor
@@ -206,7 +204,6 @@
                 const bookId = document.getElementById('bookModal').dataset.bookId;
                 const rating = parseInt(document.getElementById('ratingSelect').value);
 
-                // Realizar una solicitud POST para calificar el libro
                 fetch("http://localhost:3000/rateBook", {
                     method: "POST",
                     headers: {
